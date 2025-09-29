@@ -1,0 +1,195 @@
+Phase 1 — Environment & tooling (Windows) (0.5–1 day)
+
+Install Node.js LTS (even if backend is Java/C++ for tooling/UI).
+
+Install Git and create a GitHub repo.
+
+Install Docker Desktop for Windows (for Postgres/Redis/MinIO).
+
+If you choose Java: install JDK 21+, Maven or Gradle.
+
+If you choose C++: install Visual Studio Build Tools (MSVC), CMake, and vcpkg (for dependencies).
+
+Pick a package manager for the UI (pnpm or npm).
+
+Create a monorepo layout: /server, /desktop, /docs, /infra, /shared (for shared types/contracts).
+
+Decide on issue tracking (GitHub Projects) and set 4 weekly milestones.
+
+Phase 2 — Data model & infrastructure (1 day)
+
+Define entities on paper (or a diagram): User, Guild, Channel, Message, Membership, Role.
+
+Start PostgreSQL in Docker; start Redis in Docker; start MinIO (S3-compatible) in Docker.
+
+Create an .env (local) with DB/Redis/S3 settings.
+
+Plan indexes: messages by channel+createdAt, memberships by user+guild, etc.
+
+Decide ID strategy (UUID/CUID) and cursor pagination for message history.
+
+Phase 3 — Auth & user accounts (1–2 days)
+
+Implement email/username + password auth.
+
+Use JWT with short-lived access tokens and refresh tokens.
+
+Add register/login/refresh/me endpoints.
+
+Store hashed passwords (bcrypt/argon2).
+
+Add basic rate limiting for auth endpoints.
+
+Plan avatar upload via presigned URLs (S3/MinIO) — hook it up later in Phase 6.
+
+Checkpoint: You can create an account, login, and get “me” data.
+
+Phase 4 — Guilds & Channels (1–2 days)
+
+Endpoints for create/list guilds, invite (simple codes), join via invite.
+
+Endpoints for create/list channels within a guild (Text first, Voice later).
+
+Add role scaffolding (Owner, Admin, Member) — permissions wired later.
+
+Checkpoint: You can create a server and channels and see them in the UI.
+
+Phase 5 — Real-time messaging (2–3 days)
+
+Stand up a WebSocket gateway (Socket.IO or native websockets/STOMP depending on stack).
+
+Connection flow: client connects → sends auth token → server verifies → marks presence.
+
+Rooms: join guild:<id> and channel:<id> rooms.
+
+Send message: validate → persist → broadcast to the channel → return ack to sender.
+
+Typing indicators and presence updates (Redis for presence & pub/sub).
+
+History endpoint: fetch last N messages with cursor.
+
+Checkpoint: Two desktop clients can send/receive messages in real time with history loading.
+
+Phase 6 — File & image uploads (1 day)
+
+Add a presign upload endpoint (server validates size/type).
+
+Client uploads directly to MinIO/S3 using the presigned URL.
+
+Create message with attachmentUrl after successful upload.
+
+Render image previews; provide download for other files.
+
+Add upload size limits and MIME checks.
+
+Phase 7 — Desktop app (Electron/Tauri) UI (3–4 days)
+
+App shell: Login/Register → Main layout (left: guilds, middle: channels, right: messages).
+
+Persist session securely (Electron: Keytar; Tauri: secure storage).
+
+Integrate REST for initial data loads; integrate WebSocket for live events.
+
+Message list: virtualized scroll, timestamps, avatar, markdown basics, inline images.
+
+Composer: enter to send, shift+enter for newline, file picker, typing status.
+
+Unread counts per channel, last read trackers.
+
+Command palette (Ctrl+K) to jump between guilds/channels.
+
+Checkpoint: Usable desktop chat with a clean, dark theme and basic polish.
+
+Phase 8 — Roles & permissions (2 days)
+
+Define a permission map (e.g., SEND_MESSAGES, MANAGE_CHANNELS, KICK_MEMBERS).
+
+Attach roles to memberships; compute effective permissions per guild/channel.
+
+Enforce permissions in REST and WebSocket handlers.
+
+Add simple role management UI for owners/admins.
+
+Phase 9 — Quality: testing, logging, security (2–3 days)
+
+Unit tests on services/validation; integration tests for APIs and WS flows.
+
+Log requests and WS events; add request IDs and user IDs to logs.
+
+Input validation everywhere; sanitize/escape user content on render.
+
+Rate limits: message send per user per time window.
+
+Basic audit logs (who created/deleted channels, roles, etc.).
+
+Privacy: redact secrets in logs; secure cookies if used anywhere.
+
+Phase 10 — Packaging & updates (1–2 days)
+
+Configure app icons, app name, versioning.
+
+Build installers for Windows (EXE/MSI).
+
+Set up auto-update (Electron/Tauri’s updater + a static file host for releases).
+
+Smoke test installs on a clean Windows VM.
+
+Phase 11 — Deployment (1–2 days)
+
+Create Dockerfiles for backend; define Compose/Helm charts as you prefer.
+
+Deploy Postgres, Redis, MinIO (managed services if possible).
+
+Put API and WebSocket behind Nginx/Caddy with HTTPS.
+
+Set environment variables in the host.
+
+Create a status/health endpoint and basic uptime monitor.
+
+Publish desktop installer; write a short guide in the README.
+
+Phase 12 — Phase 2 (voice/video) — optional but impressive (1–2 weeks)
+
+Two clean options:
+
+LiveKit (fastest): self-host the LiveKit server. Your desktop app joins a room for voice channels.
+
+Mediasoup SFU (more control): run a separate SFU service; for each voice channel, allocate transports; handle ICE/DTLS on join.
+
+Steps:
+
+Add TURN/STUN (coturn) for NAT traversal.
+
+Add Voice Channel join/leave UI; speaking indicators (audio level).
+
+Mute/deafen permissions; reconnect logic; device selection (mic/speakers).
+
+Later: screen share, video tiles, voice activity detection.
+
+Phase 13 — Polish & portfolio packaging (1 day)
+
+Record a 2–3 min demo video walking through features.
+
+README sections: Overview, Screenshots, Feature list, Tech stack, Architecture diagram, How to run (dev/prod), Challenges & decisions, What’s next.
+
+Create a public roadmap (Issues + Milestones) and some “good first issues”.
+
+Write a short LinkedIn post about your architecture choices.
+
+“Can I use Java or C++ for the backend?”
+
+Java: Yes — great choice. Use Spring Boot or Quarkus. You’ll get mature WebSocket support (STOMP or raw ws), robust security (Spring Security + JWT), and easy integrations (Redis, Postgres, S3). This is the safest non-JS route and pairs fine with an Electron/Tauri desktop app.
+
+C++: Possible but higher effort. Frameworks like Drogon or oatpp can handle REST and WebSockets and connect to Postgres/Redis. You’ll spend more time on build tooling, dependency management, serialization, and validation. Choose C++ only if you specifically want to showcase systems/performance skills.
+
+Recommendation: If you want non-JS, pick Java (Spring Boot) for speed, ecosystem, and hiring signal. If you love C++ and want to stand out, go C++—just adjust your timeline.
+
+4-Week Sample Timeline (text-only MVP)
+
+Week 1: Env + data model + Auth + Guilds/Channels.
+
+Week 2: Real-time messaging + History + Presence/Typing.
+
+Week 3: File uploads + Roles/Permissions + UI polish (virtualized list, unread).
+
+Week 4: Packaging desktop app + Deployment + Docs + Demo video.
