@@ -9,29 +9,28 @@ import org.springframework.security.core.Authentication;
 
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/messages")
-public class MessageController {
+public class DirectMessageController {
 
     private final MessageService messageService;
 
-    public MessageController(MessageService messageService) {
+    public DirectMessageController(MessageService messageService) {
         this.messageService = messageService;
     }
 
     @GetMapping("")
     public ResponseEntity<List<DirectMessage>> getUserMessages(Authentication auth) {
         String username = auth.getName();
-        List<DirectMessage> messages = messageService.getMessagesForUser(username);
+        List<DirectMessage> messages = messageService.getDirectMessagesForUser(username);
         return ResponseEntity.ok(messages);
     }
 
     @GetMapping("/unread")
     public ResponseEntity<List<DirectMessage>> getUserUnreadMessages(Authentication auth) {
         String username = auth.getName();
-        List<DirectMessage> messages = messageService.getUnreadMessagesForUser(username);
+        List<DirectMessage> messages = messageService.getUnreadDirectMessagesForUser(username);
         return ResponseEntity.ok(messages);
     }
 
@@ -42,14 +41,14 @@ public class MessageController {
         String sender = auth.getName();
         String recipient = req.getRecipient();
         String content = req.getContent();
-        DirectMessage dm = messageService.sendMessage(sender, recipient, content);
+        DirectMessage dm = messageService.sendDirectMessage(sender, recipient, content);
         return ResponseEntity.ok(dm);
     }
 
     @PatchMapping("/{id}/read")
     public ResponseEntity<?> markAsRead(@PathVariable Long id, Authentication auth) {
         String username = auth.getName();
-        messageService.markAsRead(id, username);
+        messageService.markDirectMessageAsRead(id, username);
         return ResponseEntity.ok("Message marked as read");
     }
 
