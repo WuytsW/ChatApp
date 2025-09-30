@@ -27,24 +27,17 @@ public class MessageService {
     }
 
     public DirectMessage sendMessage(String senderUsername, String recipientUsername, String content) {
-        // Find sender
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
-
-        // Find recipient
         User recipient = userRepository.findByUsername(recipientUsername)
                 .orElseThrow(() -> new RuntimeException("Recipient not found"));
 
         // Create and save Message
-        Message message = new Message();
-        message.setSender(sender);
-        message.setContent(content);
+        Message message = new Message(sender, content);
         message = messageRepository.save(message);
 
         // Wrap into DirectMessage
-        DirectMessage directMessage = new DirectMessage();
-        directMessage.setMessage(message);
-        directMessage.setRecipient(recipient);
+        DirectMessage directMessage = new DirectMessage(message, recipient);
         return directMessageRepository.save(directMessage);
     }
 

@@ -2,10 +2,21 @@ package com.example.chatapp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
+
+    public User(){
+
+    }
+    public User(String username, String email, String password){
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +33,10 @@ public class User {
 
     @Column(nullable = false)
     private String role = "USER";
+
+    @ManyToMany(mappedBy = "members")
+    private Set<ChatGroup> groups = new HashSet<>();
+
 
 
     private LocalDateTime createdAt = LocalDateTime.now();

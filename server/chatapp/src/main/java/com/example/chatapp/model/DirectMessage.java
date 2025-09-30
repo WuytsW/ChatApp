@@ -6,6 +6,14 @@ import jakarta.persistence.*;
 @Table(name = "direct_messages")
 public class DirectMessage {
 
+    public DirectMessage() {
+
+    }
+    public DirectMessage(Message message, User recipient){
+        this.message = message;
+        this.recipient = recipient;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +28,8 @@ public class DirectMessage {
 
     @Column(nullable = false)
     private boolean isRead = false;
+
+
 
 
     public Long getId() {

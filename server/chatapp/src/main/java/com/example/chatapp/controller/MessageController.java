@@ -39,10 +39,10 @@ public class MessageController {
     @PostMapping("/send")
     public ResponseEntity<DirectMessage> send(@RequestBody SendDirectMessageRequest req,
                                               Authentication auth) {
-        String senderUsername = auth.getName();
+        String sender = auth.getName();
         String recipient = req.getRecipient();
         String content = req.getContent();
-        DirectMessage dm = messageService.sendMessage(senderUsername, recipient, content);
+        DirectMessage dm = messageService.sendMessage(sender, recipient, content);
         return ResponseEntity.ok(dm);
     }
 

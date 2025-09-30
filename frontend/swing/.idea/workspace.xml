@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2afafd14-bdab-4fd4-a25d-d313f1ea780a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/example/chatapp/client/ApiClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/example/chatapp/client/ChatApp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/example/chatapp/client/ChatFrame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/example/chatapp/client/LoginFrame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/example/chatapp/client/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/swing.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/ChatGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/GroupMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../js/auth.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../js/main.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../login.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../main.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../register.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/controller/MessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/controller/MessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/service/MessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/service/MessageService.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="33NrHXwcAVyapYKxcrdKlGgBbIw" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortByType" value="true" />
+    <option name="sortKey" value="BY_TYPE" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/wuyts/Documents/GitHub/ChatApp/frontend/swing/src/Main.java&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="ChatApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.chatapp.client.ChatApp" />
+      <module name="swing" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.chatapp.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ChatApp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2afafd14-bdab-4fd4-a25d-d313f1ea780a" name="Changes" comment="" />
+      <created>1759168287247</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1759168287247</updated>
+      <workItem from="1759168288334" duration="3113000" />
+      <workItem from="1759219627587" duration="6000" />
+      <workItem from="1759246382974" duration="887000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Main.java</url>
+          <line>13</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

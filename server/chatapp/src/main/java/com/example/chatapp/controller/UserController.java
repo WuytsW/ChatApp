@@ -21,11 +21,6 @@ public class UserController {
         return userService.saveUser(user);
     }
 
-    @GetMapping("/secure/hello")
-    public String hello() {
-        return "Hello! You are authenticated";
-    }
-
 //    @GetMapping("")
 //    public List<User> getUsers(){
 //        return userService.getAllUsers();

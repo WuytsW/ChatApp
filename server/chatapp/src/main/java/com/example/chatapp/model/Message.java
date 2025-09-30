@@ -7,6 +7,14 @@ import java.time.LocalDateTime;
 @Table(name = "messages")
 public class Message {
 
+    public Message() {
+
+    }
+    public Message(User sender, String content){
+        this.sender = sender;
+        this.content = content;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
