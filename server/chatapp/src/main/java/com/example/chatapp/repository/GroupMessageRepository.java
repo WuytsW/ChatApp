@@ -21,10 +21,11 @@ public interface GroupMessageRepository  extends JpaRepository<GroupMessage, Lon
           join fetch gm.message m
           join gm.chatGroup g
           join g.members mem
-        where mem.id = :userId
+        where mem = :user
         order by m.sentAt desc
     """)
-    List<GroupMessage> findAllForUser(@Param("userId") Long userId);
+    List<GroupMessage> findAllForUser(@Param("user") User user);
+
 
     List<GroupMessage> findByChatGroup(ChatGroup chatGroup);
 }

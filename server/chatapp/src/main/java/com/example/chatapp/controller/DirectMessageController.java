@@ -25,16 +25,16 @@ public class DirectMessageController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<MessageResponse>> getDirectMessages(@AuthenticationPrincipal JwtUser user) {
-        Long userId = user.getId();
+    public ResponseEntity<List<MessageResponse>> getDirectMessages(@AuthenticationPrincipal JwtUser jwtUser) {
+        Long userId = jwtUser.getId();
         List<DirectMessage> messages = directMessageService.getDirectMessagesForUser(userId);
         List<MessageResponse> response = messages.stream().map(MessageResponse::new).toList();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/get/unread")
-    public ResponseEntity<List<MessageResponse>> getUserUnreadMessages(@AuthenticationPrincipal JwtUser user) {
-        Long userId = user.getId();
+    public ResponseEntity<List<MessageResponse>> getUserUnreadMessages(@AuthenticationPrincipal JwtUser jwtUser) {
+        Long userId = jwtUser.getId();
         List<DirectMessage> messages = directMessageService.getUnreadDirectMessagesForUser(userId);
         List<MessageResponse> response = messages.stream().map(MessageResponse::new).toList();
         return ResponseEntity.ok(response);
@@ -42,17 +42,17 @@ public class DirectMessageController {
 
 
     @GetMapping("/get/conversation{userId2}")
-    public ResponseEntity<List<MessageResponse>> getDirectConversation(@AuthenticationPrincipal JwtUser user, @PathVariable Long userId2) {
-        Long userId1 = user.getId();
+    public ResponseEntity<List<MessageResponse>> getDirectConversation(@AuthenticationPrincipal JwtUser jwtUser, @PathVariable Long userId2) {
+        Long userId1 = jwtUser.getId();
         List<DirectMessage> messages = directMessageService.getDirectConversation(userId1, userId2);
         List<MessageResponse> response = messages.stream().map(MessageResponse::new).toList();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/send")
-    public ResponseEntity<MessageResponse> send(@RequestBody SendDirectMessageRequest req, @AuthenticationPrincipal JwtUser user)
+    public ResponseEntity<MessageResponse> send(@RequestBody SendDirectMessageRequest req, @AuthenticationPrincipal JwtUser jwtUser)
     {
-        Long senderId = user.getId();
+        Long senderId = jwtUser.getId();
         Long recipientId = req.getRecipientId();
         String content = req.getContent();
         DirectMessage directMessage = directMessageService.sendDirectMessage(senderId, recipientId, content);
@@ -61,8 +61,8 @@ public class DirectMessageController {
     }
 
     @PatchMapping("/read")
-    public ResponseEntity<MessageResponse> markDirectMessageAsRead(@AuthenticationPrincipal JwtUser user, @RequestParam Long id) {
-        Long userId = user.getId();
+    public ResponseEntity<MessageResponse> markDirectMessageAsRead(@AuthenticationPrincipal JwtUser jwtUser, @RequestParam Long id) {
+        Long userId = jwtUser.getId();
         DirectMessage directMessage = directMessageService.markDirectMessageAsRead(id, userId);
         MessageResponse response = new MessageResponse(directMessage);
         return ResponseEntity.ok(response);

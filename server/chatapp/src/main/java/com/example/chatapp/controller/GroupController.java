@@ -25,28 +25,28 @@ public class GroupController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<ChatGroupResponse>> getGroups(@AuthenticationPrincipal JwtUser user){
-        String username = user.getUsername();
-        List<ChatGroup> chatGroups = groupService.getGroupsByUsername(username);
+    public ResponseEntity<List<ChatGroupResponse>> getGroups(@AuthenticationPrincipal JwtUser jwtUser){
+        Long userId = jwtUser.getId();
+        List<ChatGroup> chatGroups = groupService.getGroupsByUser(userId);
         List<ChatGroupResponse> response = chatGroups.stream().map(ChatGroupResponse::new).toList();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/new")
-    public ResponseEntity<ChatGroupResponse> createGroup(@AuthenticationPrincipal JwtUser user, String name) {
-        String username = user.getUsername();
-        ChatGroup chatGroup = groupService.createNew(username, name);
+    public ResponseEntity<ChatGroupResponse> createGroup(@AuthenticationPrincipal JwtUser jwtUser, String name) {
+        Long userId = jwtUser.getId();
+        ChatGroup chatGroup = groupService.createNew(userId, name);
         ChatGroupResponse response = new ChatGroupResponse(chatGroup);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/add")
     public ResponseEntity<ChatGroupResponse> addUserToGroup(
-            @AuthenticationPrincipal JwtUser user,
+            @AuthenticationPrincipal JwtUser jwtUser,
             @RequestBody AddGroupMemberRequest addGroupMemberRequest
     ) {
-        String username = user.getUsername();
-        ChatGroup chatGroup = groupService.addMember(username, addGroupMemberRequest);
+        Long userId = jwtUser.getId();
+        ChatGroup chatGroup = groupService.addMember(userId, addGroupMemberRequest);
         ChatGroupResponse response = new ChatGroupResponse(chatGroup);
         return ResponseEntity.ok(response);
     }

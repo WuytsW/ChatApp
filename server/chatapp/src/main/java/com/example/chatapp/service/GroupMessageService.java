@@ -27,8 +27,8 @@ public class GroupMessageService {
         this.groupMessageRepository = groupMessageRepository;
     }
 
-    public GroupMessage sendGroupMessage(String senderName, Long groupId,  String content) {
-        User sender = userRepository.findByUsername(senderName)
+    public GroupMessage sendGroupMessage(Long userId, Long groupId,  String content) {
+        User sender = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
         ChatGroup chatGroup = chatGroupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found"));
@@ -41,16 +41,16 @@ public class GroupMessageService {
         return groupMessageRepository.save(groupMessage);
     }
 
-    public List<GroupMessage> getAllGroupMessagesForUser(String username) {
-        User user = userRepository.findByUsername(username)
+    public List<GroupMessage> getAllGroupMessagesForUser(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return groupMessageRepository.findAllForUser(user.getId());
+        return groupMessageRepository.findAllForUser(user);
     }
 
-    public List<GroupMessage> getGroupMessageByGroup(Long group_id, String username) {
-        User user = userRepository.findByUsername(username)
+    public List<GroupMessage> getGroupMessageByGroup(Long groupId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        ChatGroup chatGroup= chatGroupRepository.findChatGroupById(group_id)
+        ChatGroup chatGroup = chatGroupRepository.findChatGroupById(groupId)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
         ensureMember(chatGroup, user);
@@ -58,10 +58,10 @@ public class GroupMessageService {
         return groupMessageRepository.findByChatGroup(chatGroup);
     }
 
-    public GroupMessage markGroupMessageAsRead(Long groupMessageId, String username) {
+    public GroupMessage markGroupMessageAsRead(Long groupMessageId, Long userId) {
         GroupMessage groupMessage = groupMessageRepository.findById(groupMessageId)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         ensureMember(groupMessage.getChatGroup(), user);

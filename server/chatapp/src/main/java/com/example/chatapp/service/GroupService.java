@@ -22,27 +22,23 @@ public class GroupService {
         this.userRepository = userRepository;
     }
 
-    public List<ChatGroup> getGroupsByUsername(String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return chatGroupRepository.findAllByMembersContaining(user);
-    }
-
-    public ChatGroup createNew(String username, String name) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ChatGroup createNew(Long userId, String name) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         ChatGroup chatGroup = new ChatGroup(name);
         chatGroup.addMember(user);
         return chatGroupRepository.save(chatGroup);
     }
 
-    public ChatGroup addMember(String username, AddGroupMemberRequest addGroupMemberRequest) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        ChatGroup chatGroup = chatGroupRepository.findByName(addGroupMemberRequest.getGroup_name())
-                .orElseThrow(() -> new RuntimeException("Group not found"));
-        User member = userRepository.findByUsername(addGroupMemberRequest.getMember_name())
-                .orElseThrow(() -> new RuntimeException("New member not found"));
+    public ChatGroup addMember(Long userId, AddGroupMemberRequest addGroupMemberRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        Long groupId = addGroupMemberRequest.getGroupId();
+        ChatGroup chatGroup = chatGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found: " + groupId));
+        Long memberId = addGroupMemberRequest.getMemberId();
+        User member = userRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("New member not found: " + memberId));
 
         if(!chatGroup.getMembers().contains(user)){
             throw new RuntimeException("You can only add members if you are a member");
@@ -50,5 +46,11 @@ public class GroupService {
 
         chatGroup.addMember(member);
         return chatGroupRepository.save(chatGroup);
+    }
+
+    public List<ChatGroup> getGroupsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        return chatGroupRepository.findAllByMembersContaining(user);
     }
 }

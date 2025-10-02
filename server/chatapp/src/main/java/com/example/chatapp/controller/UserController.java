@@ -30,8 +30,8 @@ public class UserController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal JwtUser user){
-        String username = user.getUsername();
+    public ResponseEntity<UserResponse> getUser(@AuthenticationPrincipal JwtUser jwtUser){
+        String username = jwtUser.getUsername();
         User userU = userService.getUserByUsername(username);
         return ResponseEntity.ok(new UserResponse(userU));
     }
@@ -51,8 +51,8 @@ public class UserController {
     }
 
     @PostMapping("/friends/add")
-    public ResponseEntity<UserResponse> addFriend(@AuthenticationPrincipal JwtUser user, @RequestParam String friend_name){
-        String username = user.getUsername();
+    public ResponseEntity<UserResponse> addFriend(@AuthenticationPrincipal JwtUser jwtUser, @RequestParam String friend_name){
+        String username = jwtUser.getUsername();
         User userU = userService.addFriend(username, friend_name);
         return ResponseEntity.ok(new UserResponse(userU));
     }

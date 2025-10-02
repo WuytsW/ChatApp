@@ -1,14 +1,14 @@
 package com.example.chatapp.dto.request;
 
 public class SendGroupMessageRequest {
-    private Long group_id;
+    private Long groupId;
     private String content;
 
-    public Long getGroup_id() {
-        return group_id;
+    public Long getGroupId() {
+        return groupId;
     }
-    public void setGroup_id(Long group_id) {
-        this.group_id = group_id;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public String getContent() { return content; }
