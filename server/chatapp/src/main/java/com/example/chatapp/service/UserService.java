@@ -1,6 +1,7 @@
 
 package com.example.chatapp.service;
 
+import com.example.chatapp.dto.RegisterRequest;
 import com.example.chatapp.model.User;
 import com.example.chatapp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,11 +32,13 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public void deleteUser(Long id) {
@@ -44,11 +47,25 @@ public class UserService {
 
     public User addFriend(String username, String friendName){
         User user =  userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
         User friend =  userRepository.findByUsername(friendName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found: " + friendName));
 
         user.addFriend(friend);
+        return userRepository.save(user);
+    }
+
+    public List<User> getFriends(String username) {
+        User user =  userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        return user.getFriends();
+    }
+
+    public User register(RegisterRequest registerRequest) {
+        User user = new User();
+        user.setUsername(registerRequest.getUsername());
+        user.setEmail(registerRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         return userRepository.save(user);
     }
 }

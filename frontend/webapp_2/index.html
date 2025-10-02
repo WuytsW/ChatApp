@@ -186,6 +186,22 @@
         </div>
       </div>
     </section>
+
+    <!-- PAGE 4: Direct Chat with Friend -->
+    <section id="page-direct-chat" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <button class="btn" id="backToMainFromDirect">← Back</button>
+        <span class="pill" id="directChatHeaderPill"></span>
+      </div>
+      <div class="card">
+        <h2 class="title">Direct Messages</h2>
+        <div id="directMessagesBox" class="card" style="background:#fafafa;max-height:420px;overflow:auto"></div>
+        <div class="row end" style="margin-top:8px">
+          <label class="grow">Message<input id="directMsgText" placeholder="Write a message…" /></label>
+          <button class="btn primary" id="sendDirectMsgBtn">Send</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- Settings modal -->
@@ -208,7 +224,7 @@
     token: localStorage.getItem('chat.token') || '',
     username: localStorage.getItem('chat.username') || '',
     selectedGroup: null,
-  };
+  }
   function saveState(){ localStorage.setItem('chat.apiBase', state.apiBase); localStorage.setItem('chat.token', state.token); localStorage.setItem('chat.username', state.username); }
   function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
@@ -235,17 +251,18 @@
   // Map endpoints (adjust to your backend if needed)
   const endpoints = {
     login: { path:'/api/auth/login', method:'POST' },
-    register: { path:'/api/auth/register', method:'POST' }, // adjust if different
-    meByUsername: (u)=> ({ path:`/api/user/${encodeURIComponent(u)}`, method:'GET' }),
-    friendsOf: (u)=> ({ path:`/api/user/${encodeURIComponent(u)}`, method:'GET' }), // expect friends in payload
-    addFriend: (u)=> ({ path:`/api/user/friends/add/${encodeURIComponent(u)}`, method:'POST' }),
-    groupsList: { path:'/api/groups', method:'GET' },
+    register: { path:'/api/user/register', method:'POST' },
+    meByUsername: { path:'/api/user/get', method:'GET' },
+    friendsOf: { path:'/api/user/friends/get', method:'GET' },
+    addFriend: { path:'/api/user/friends/add', method:'POST' },
+    groupsList: { path:'/api/groups/get', method:'GET' },
     groupsCreate: { path:'/api/groups/new', method:'POST' },
-    groupMessagesList: (gid)=> ({ path:`/api/messages/group/${gid}`, method:'GET' }),
-    groupMessagesSend: (gid)=> ({ path:`/api/messages/group/send/${gid}`, method:'POST' }),
-    directMessagesList: { path:'/api/messages/direct', method:'GET' }, // if not available, stays empty
+    groupMessagesList: groupId => ({ path:`/api/messages/group/get/group/${encodeURIComponent(groupId)}`, method:'GET' }),
+    groupMessagesSend: { path:'/api/messages/group/send', method:'POST' },
+    directMessagesList: otherUsername => ({ path:`/api/messages/direct/get/conversation/${encodeURIComponent(otherUsername)}`, method:'GET' }), // <-- updated
     directMessagesSend: { path:'/api/messages/direct/send', method:'POST' },
     addUserToGroup: { path:'/api/groups/add', method:'POST' },
+    allMessages: { path:'/api/messages/direct/get', method:'GET' }, // NEW endpoint for all messages
   };
 
   // ----------------------- Router (hash) -----------------------
@@ -256,6 +273,7 @@
     $('#page-auth').classList.add('hidden');
     $('#page-main').classList.add('hidden');
     $('#page-group').classList.add('hidden');
+    $('#page-direct-chat').classList.add('hidden'); // NEW
 
     if (!state.token) {
       $('#page-auth').classList.remove('hidden');
@@ -276,6 +294,9 @@
     } else if (page==='group' && p1) {
       $('#page-group').classList.remove('hidden');
       openGroup(p1);
+    } else if (page==='direct' && p1) {
+      $('#page-direct-chat').classList.remove('hidden');
+      openDirectChat(p1);
     } else {
       // default
       location.hash = '#/main';
@@ -294,7 +315,7 @@
       const userOrEmail = $('#loginUser').value.trim(); const password = $('#loginPass').value;
       try{
         // Try username first; if backend expects email, swap the key below to { email: userOrEmail }
-        const body = { email_or_password  : userOrEmail, password };
+        const body = { email_or_username  : userOrEmail, password };
         const res = await apiRequest({ ...endpoints.login, body, token:'' });
         if (res?.token){ state.token=res.token; state.username=userOrEmail; saveState(); location.hash = '#/main'; }
         else throw new Error('Login failed');
@@ -321,29 +342,38 @@
     $('#refreshGroupsBtn').addEventListener('click', loadGroups);
     $('#createGroupBtn').addEventListener('click', async ()=>{
       const name = $('#newGroupName').value.trim(); if(!name) return;
-      try { await apiRequest({ ...endpoints.groupsCreate, body:{ name } }); }
-      catch{ await apiRequest({ ...endpoints.groupsCreate, params:{ name } }); }
+      try { await apiRequest({ ...endpoints.groupsCreate, body:{ name }, token: state.token }); }
+      catch{ await apiRequest({ ...endpoints.groupsCreate, params:{ name }, token: state.token }); }
       $('#newGroupName').value=''; await loadGroups(); toast('Group created');
     });
 
+    // Update group message send:
     $('#groupPreviewSend').addEventListener('click', async ()=>{
       const text=$('#groupPreviewText').value.trim(); if(!text || !state.selectedGroup) return;
       const gid = state.selectedGroup.id || state.selectedGroup.groupId || state.selectedGroup;
-      await apiRequest({ ...endpoints.groupMessagesSend(gid), body:{ content:text } });
+      await apiRequest({ ...endpoints.groupMessagesSend, body:{ group_id: gid, content:text }, token: state.token });
       $('#groupPreviewText').value=''; await previewGroup(state.selectedGroup); toast('Message sent');
     });
 
     $('#sendDmBtn').addEventListener('click', async ()=>{
       $('#dmInfo').textContent=''; $('#dmErr').textContent='';
       const recipient=$('#dmRecipient').value.trim(); const content=$('#dmContent').value.trim(); if(!recipient || !content) return;
-      try{ const res = await apiRequest({ ...endpoints.directMessagesSend, body:{ recipient, content } }); $('#dmInfo').textContent=`Sent to ${recipient}`; $('#dmContent').value=''; }
+      try{ const res = await apiRequest({ ...endpoints.directMessagesSend, body:{ recipient, content }, token: state.token }); $('#dmInfo').textContent=`Sent to ${recipient}`; $('#dmContent').value=''; }
       catch(err){ $('#dmErr').textContent = err.message; }
     });
 
+    // Update add friend button handler:
     $('#addFriendBtn').addEventListener('click', async ()=>{
       $('#friendInfo').textContent=''; $('#friendErr').textContent='';
-      const f=$('#friendName').value.trim(); if(!f) return;
-      try{ await apiRequest(endpoints.addFriend(f)); $('#friendInfo').textContent=`Added ${f}`; $('#friendName').value=''; loadFriends(); }
+      const f = $('#friendName').value.trim(); if (!f) return;
+      try {
+        await apiRequest({
+          ...endpoints.addFriend,
+          params: { friend_name: f }, // send as request param
+          token: state.token
+        });
+        $('#friendInfo').textContent = `Added ${f}`; $('#friendName').value = ''; loadFriends();
+      }
       catch(err){ $('#friendErr').textContent = err.message; }
     });
 
@@ -353,7 +383,7 @@
       const member_name = $('#addMemberName').value.trim();
       if(!group_name || !member_name) return;
       try {
-        await apiRequest({ ...endpoints.addUserToGroup, body: { group_name, member_name } });
+        await apiRequest({ ...endpoints.addUserToGroup, body: { group_name, member_name }, token: state.token });
         $('#addUserGroupInfo').textContent = `Added ${escapeHtml(member_name)} to ${escapeHtml(group_name)}`;
         $('#addGroupName').value = ''; $('#addMemberName').value = '';
         loadGroups();
@@ -366,10 +396,26 @@
     $('#sendGroupMsgBtn').addEventListener('click', async ()=>{
       if (!state.selectedGroup) return; const text=$('#groupMsgText').value.trim(); if(!text) return;
       const gid = state.selectedGroup.id || state.selectedGroup.groupId || state.selectedGroup;
-      await apiRequest({ ...endpoints.groupMessagesSend(gid), body:{ content:text } });
+      await apiRequest({ ...endpoints.groupMessagesSend, body:{ group_id: gid, content:text }, token: state.token });
       $('#groupMsgText').value=''; await openGroup(gid); toast('Message sent');
     });
     $('#backToMain').addEventListener('click', ()=>{ location.hash = '#/main'; });
+
+    // Direct chat actions
+    $('#sendDirectMsgBtn').addEventListener('click', async ()=>{
+      const text = $('#directMsgText').value.trim();
+      const friend = state.selectedDirectFriend;
+      if(!text || !friend) return;
+      try {
+        await apiRequest({ ...endpoints.directMessagesSend, body: { recipient: friend, content: text }, token: state.token });
+        $('#directMsgText').value = '';
+        openDirectChat(friend);
+        toast('Message sent');
+      } catch(err) {
+        toast(err.message);
+      }
+    });
+    $('#backToMainFromDirect').addEventListener('click', ()=>{ location.hash = '#/main'; });
 
     // Initial route
     window.addEventListener('hashchange', route);
@@ -389,25 +435,28 @@
   }
 
   async function loadInbox(){
-    try{
-      const list = $('#dmList'); list.innerHTML='';
-      let data = [];
-      try { data = await apiRequest(endpoints.directMessagesList); }
-      catch { data = []; /* backend might not expose this endpoint */ }
-      if (!Array.isArray(data) || !data.length) { list.innerHTML = '<div class="mutedText">No direct messages or endpoint unavailable.</div>'; return; }
-      data.forEach(m=>{
+    try {
+      const list = $('#dmList'); list.innerHTML = '';
+      const data = await apiRequest({ ...endpoints.allMessages, token: state.token });
+      if (!Array.isArray(data) || !data.length) {
+        list.innerHTML = '<div class="mutedText">No messages found.</div>';
+        return;
+      }
+      data.forEach(m => {
         const sender = m?.sender?.username || m?.message?.sender?.username || 'unknown';
         const content = m?.content || m?.message?.content || '';
         const el = document.createElement('div');
         el.innerHTML = `<div><strong>${escapeHtml(sender)}</strong>: ${escapeHtml(content)}</div>`;
         list.appendChild(el);
       });
-    }catch(err){ $('#dmList').innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`; }
+    } catch (err) {
+      $('#dmList').innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`;
+    }
   }
 
   async function loadGroups(){
     try{
-      const res = await apiRequest(endpoints.groupsList);
+      const res = await apiRequest({ ...endpoints.groupsList, token: state.token });
       const ul = $('#groupsList'); ul.innerHTML='';
       (res||[]).forEach(g=>{
         const li=document.createElement('li');
@@ -420,11 +469,12 @@
     }catch(err){ alert(err.message); }
   }
 
+  // Example: previewGroup
   async function previewGroup(g){
     state.selectedGroup = g; const gid = g.id ?? g.groupId ?? g;
     const box = $('#groupPreviewBox');
     try{
-      const res = await apiRequest(endpoints.groupMessagesList(gid));
+      const res = await apiRequest({ ...endpoints.groupMessagesList(gid), token: state.token });
       const msgs = Array.isArray(res) ? res : (res?.messages || []);
       box.innerHTML = msgs.length ? msgs.map(m=>{
         const s = m?.message?.sender?.username || m?.sender?.username || '?';
@@ -437,22 +487,25 @@
   async function loadFriends(){
     const ul = $('#friendsList'); ul.innerHTML='';
     try {
-      const res = await apiRequest(endpoints.friendsOf(state.username));
-      const friends = res?.friends || res?.friendList || [];
+      const res = await apiRequest({ ...endpoints.friendsOf, token: state.token });
+      // Handle both array and object response
+      const friends = Array.isArray(res) ? res : (res?.friends || res?.friendList || []);
       if (!friends.length) { ul.innerHTML = '<div class="mutedText">No friends listed in profile response.</div>'; return; }
       friends.forEach(f=>{
         const name = f?.username || f?.name || String(f);
         const li=document.createElement('li');
-        li.innerHTML = `<div><strong>${escapeHtml(name)}</strong></div>`; ul.appendChild(li);
+        li.innerHTML = `<div><strong class="friend-link" style="cursor:pointer;color:#2563eb">${escapeHtml(name)}</strong></div>`;
+        li.querySelector('.friend-link').addEventListener('click', ()=> location.hash = `#/direct/${name}`);
+        ul.appendChild(li);
       });
     } catch(err){ ul.innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`; }
   }
 
-  // ----------------------- Group page helpers -----------------------
+  // Example: openGroup
   async function openGroup(gid){
     $('#groupHeaderPill').textContent = `Group ${gid}`;
     try{
-      const res = await apiRequest(endpoints.groupMessagesList(gid));
+      const res = await apiRequest({ ...endpoints.groupMessagesList(gid), token: state.token });
       const msgs = Array.isArray(res) ? res : (res?.messages || []);
       const box = $('#groupMessagesBox');
       box.innerHTML = msgs.length ? msgs.map(m=>{
@@ -463,6 +516,72 @@
       state.selectedGroup = gid;
     }catch(err){ $('#groupMessagesBox').innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`; }
   }
+
+  // Example: loadInbox (direct messages)
+  async function loadInbox(){
+    try {
+      const list = $('#dmList'); list.innerHTML = '';
+      const data = await apiRequest({ ...endpoints.allMessages, token: state.token });
+      if (!Array.isArray(data) || !data.length) {
+        list.innerHTML = '<div class="mutedText">No messages found.</div>';
+        return;
+      }
+      data.forEach(m => {
+        const sender = m?.sender?.username || m?.message?.sender?.username || 'unknown';
+        const content = m?.content || m?.message?.content || '';
+        const el = document.createElement('div');
+        el.innerHTML = `<div><strong>${escapeHtml(sender)}</strong>: ${escapeHtml(content)}</div>`;
+        list.appendChild(el);
+      });
+    } catch (err) {
+      $('#dmList').innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  // Example: openDirectChat
+  async function openDirectChat(friend){
+    $('#directChatHeaderPill').textContent = `Chat with ${friend}`;
+    state.selectedDirectFriend = friend;
+    try {
+      const sent = await apiRequest({ path: `/api/messages/direct/get/recipient/${encodeURIComponent(friend)}`, method: 'GET', token: state.token });
+      const received = await apiRequest({ path: `/api/messages/direct/get/sender/${encodeURIComponent(friend)}`, method: 'GET', token: state.token });
+      const all = [...(sent || []), ...(received || [])].sort((a, b) => new Date(a.message?.sentAt || 0) - new Date(b.message?.sentAt || 0));
+      const box = $('#directMessagesBox');
+      box.innerHTML = all.length ? all.map(m=>{
+        const s = m?.message?.sender?.username || '?';
+        const c = m?.message?.content || '';
+        const t = m?.message?.sentAt ? new Date(m.message.sentAt).toLocaleString() : '';
+        return `<div style="padding:8px 0;border-top:1px solid var(--border)">
+          <strong>${escapeHtml(s)}</strong>: ${escapeHtml(c)}
+          <span class="mutedText" style="float:right">${escapeHtml(t)}</span>
+        </div>`;
+      }).join('') : '<div class="mutedText">No messages yet.</div>';
+    } catch(err){
+      $('#directMessagesBox').innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  // Add a helper to load all messages for the logged-in user
+  async function loadAllMessages(){
+    try {
+      const list = $('#dmList'); list.innerHTML = '';
+      const data = await apiRequest({ ...endpoints.allMessages, token: state.token });
+      if (!Array.isArray(data) || !data.length) {
+        list.innerHTML = '<div class="mutedText">No messages found.</div>';
+        return;
+      }
+      data.forEach(m => {
+        const sender = m?.sender?.username || m?.message?.sender?.username || 'unknown';
+        const content = m?.content || m?.message?.content || '';
+        const el = document.createElement('div');
+        el.innerHTML = `<div><strong>${escapeHtml(sender)}</strong>: ${escapeHtml(content)}</div>`;
+        list.appendChild(el);
+      });
+    } catch (err) {
+      $('#dmList').innerHTML = `<div class="mutedText" style="color:var(--danger)">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
   </script>
 
 </body></html>

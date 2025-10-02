@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .cors(cors -> {}) // use our global CORS config below
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/user/register", "/api/auth/login", "/api/user/get/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -77,14 +77,27 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5500"));
-        config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true);
-        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(true); // if you don't use cookies/bearer across sites, set to false
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "https://*.ngrok-free.dev",
+                "https://*.ngrok-free.app"
+        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With",
+                "ngrok-skip-browser-warning" // ngrok quirk
+        ));
+        config.setExposedHeaders(List.of("Authorization")); // add others if you need them
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
 }

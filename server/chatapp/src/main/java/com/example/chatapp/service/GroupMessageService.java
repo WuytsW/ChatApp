@@ -27,20 +27,17 @@ public class GroupMessageService {
         this.groupMessageRepository = groupMessageRepository;
     }
 
-    public GroupMessage sendGroupMessage(String username, Long groupId,  String content) {
-        User sender = userRepository.findByUsername(username)
+    public GroupMessage sendGroupMessage(String senderName, Long groupId,  String content) {
+        User sender = userRepository.findByUsername(senderName)
                 .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
-
-        ChatGroup group = chatGroupRepository.findById(groupId)
+        ChatGroup chatGroup = chatGroupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found"));
 
-        if (!group.getMembers().contains(sender)) {
-            throw new IllegalArgumentException("User is not a member of this group");
-        }
+        ensureMember(chatGroup, sender);
 
         Message message = new Message(sender, content);
         message = messageRepository.save(message);
-        com.example.chatapp.model.GroupMessage groupMessage = new GroupMessage(message, group);
+        com.example.chatapp.model.GroupMessage groupMessage = new GroupMessage(message, chatGroup);
         return groupMessageRepository.save(groupMessage);
     }
 
@@ -56,9 +53,7 @@ public class GroupMessageService {
         ChatGroup chatGroup= chatGroupRepository.findChatGroupById(group_id)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
 
-        if(!chatGroup.getMembers().contains(user)){
-            throw new RuntimeException("User not in group");
-        }
+        ensureMember(chatGroup, user);
 
         return groupMessageRepository.findByChatGroup(chatGroup);
     }
@@ -69,12 +64,19 @@ public class GroupMessageService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!groupMessage.getChatGroup().getMembers().contains(user)) {
-            throw new RuntimeException("You are not allowed to modify this message");
-        }
+        ensureMember(groupMessage.getChatGroup(), user);
 
         groupMessage.addRead_by_Member(user);
 
         return groupMessageRepository.save(groupMessage);
+    }
+
+
+    private void ensureMember(ChatGroup chatGroup, User sender) {
+        if (!chatGroup.getMembers().contains(sender)) {
+            throw new IllegalArgumentException(
+                    "User: " + sender.getUsername() + " is not a member of this group: " + chatGroup.getName()
+            );
+        }
     }
 }

@@ -1,5 +1,8 @@
 package com.example.chatapp.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.example.chatapp.dto.SendDirectMessageRequest;
 import com.example.chatapp.model.DirectMessage;
 import com.example.chatapp.service.DirectMessageService;
@@ -34,17 +37,27 @@ public class DirectMessageController {
         return ResponseEntity.ok(messages);
     }
 
-    @GetMapping("/get/sender")
-    public ResponseEntity<?> getDirectMessagesFromSender(Authentication auth, String sender) {
+    @GetMapping("/get/sender/{sender}")
+    public ResponseEntity<?> getDirectMessagesFromSender(Authentication auth, @PathVariable String sender) {
         String username = auth.getName();
-        List<DirectMessage> messages = directMessageService.getDirectMessagesForMeFromUser(username, sender);
+        List<DirectMessage> messages = directMessageService.getDirectMessagesForUserFromUser(username, sender);
         return ResponseEntity.ok(messages);
     }
 
-    @GetMapping("/get/recipient")
-    public ResponseEntity<?> getDirectMessagesForRecipient(Authentication auth, String recipient) {
+    @GetMapping("/get/conversation{username2}")
+    public ResponseEntity<?> getDirectConversation(Authentication auth, @PathVariable String username2) {
+        String username1 = auth.getName();
+        List<DirectMessage> messages = directMessageService.getDirectConversation(username1, username2);
+        return ResponseEntity.ok(messages);
+    }
+
+    private static final Logger log = LoggerFactory.getLogger(DirectMessageController.class);
+
+    @GetMapping("/get/recipient/{recipient}")
+    public ResponseEntity<?> getDirectMessagesForRecipient(Authentication auth, @PathVariable String recipient) {
         String username = auth.getName();
-        List<DirectMessage> messages = directMessageService.getDirectMessagesForUserFromMe(username, recipient);
+        log.debug(recipient);
+        List<DirectMessage> messages = directMessageService.getDirectMessagesForUserFromUser(recipient, username);
         return ResponseEntity.ok(messages);
     }
 
@@ -61,7 +74,7 @@ public class DirectMessageController {
     }
 
     @PatchMapping("/read")
-    public ResponseEntity<?> markDirectMessageAsRead(Authentication auth, Long id) {
+    public ResponseEntity<?> markDirectMessageAsRead(Authentication auth, @RequestParam Long id) {
         String username = auth.getName();
         DirectMessage directMessage = directMessageService.markDirectMessageAsRead(id, username);
         return ResponseEntity.ok(directMessage);

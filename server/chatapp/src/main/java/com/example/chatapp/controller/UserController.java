@@ -1,7 +1,11 @@
 package com.example.chatapp.controller;
 
+import com.example.chatapp.dto.RegisterRequest;
+import com.example.chatapp.dto.UserSummary;
 import com.example.chatapp.model.User;
+import com.example.chatapp.dto.UserResponse;
 import com.example.chatapp.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,24 +23,36 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest registerRequest) {
+        User user = userService.register(registerRequest);
+        return ResponseEntity.ok(new UserResponse(user));
     }
 
     @GetMapping("/get")
-    public User getUser(Authentication auth){
+    public ResponseEntity<UserResponse> getUser(Authentication auth){
         String username = auth.getName();
-        return userService.getUserByUsername(username);
+        User user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(new UserResponse(user));
     }
 
-    @GetMapping("/get/user")
-    public User getUserByUsername(String username){
-        return userService.getUserByUsername(username);
+    @GetMapping("/get/{username}")
+    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String username) {
+        User user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(new UserResponse(user));
+    }
+
+    @GetMapping("/friends/get")
+    public ResponseEntity<List<UserSummary>> getFriends(Authentication auth){
+        String username = auth.getName();
+        List<User> friends = userService.getFriends(username);
+        List<UserSummary> friendsSummary = friends.stream().map(UserSummary::new).toList();
+        return ResponseEntity.ok(friendsSummary);
     }
 
     @PostMapping("/friends/add")
-    public User addFriend(Authentication auth, String friend_name){
+    public ResponseEntity<UserResponse> addFriend(Authentication auth, @RequestParam String friend_name){
         String username = auth.getName();
-        return userService.addFriend(username, friend_name);
+        User user = userService.addFriend(username, friend_name);
+        return ResponseEntity.ok(new UserResponse(user));
     }
 }

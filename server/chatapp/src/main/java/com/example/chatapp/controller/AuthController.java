@@ -26,10 +26,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody LoginRequest loginRequest) {
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail_or_password());
+        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail_or_username());
 
         if (userOptional.isEmpty()) {
-            userOptional = userRepository.findByUsername(loginRequest.getEmail_or_password());
+            userOptional = userRepository.findByUsername(loginRequest.getEmail_or_username());
             if (userOptional.isEmpty()) {
                 return Map.of("error", "User not found");
             }

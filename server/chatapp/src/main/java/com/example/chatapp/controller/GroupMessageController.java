@@ -30,10 +30,10 @@ public class GroupMessageController {
         return ResponseEntity.ok(messages);
     }
 
-    @GetMapping("/get/group")
+    @GetMapping("/get/group/{id}")
     public ResponseEntity<List<GroupMessage>> getGroupMessagesByGroup(
             Authentication auth,
-            Long id
+            @PathVariable Long id
     ) {
         String username = auth.getName();
         List<GroupMessage> messages = groupMessageService.getGroupMessageByGroup(id, username);
@@ -54,7 +54,7 @@ public class GroupMessageController {
     @PatchMapping("/read")
     public ResponseEntity<GroupMessage> markAsRead(
             Authentication auth,
-            Long group_message_id
+            @RequestParam Long group_message_id
     ) {
         String username = auth.getName();
 

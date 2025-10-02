@@ -1,5 +1,6 @@
 package com.example.chatapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
@@ -45,6 +47,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"), // current user
             inverseJoinColumns = @JoinColumn(name = "friend_id") // their friend
     )
+    @JsonIgnore
     private List<User> friends = new ArrayList<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();

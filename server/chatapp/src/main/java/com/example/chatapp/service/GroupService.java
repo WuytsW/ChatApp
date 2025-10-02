@@ -44,7 +44,7 @@ public class GroupService {
                 .orElseThrow(() -> new RuntimeException("New member not found"));
 
         if(!chatGroup.getMembers().contains(user)){
-            throw new RuntimeException("You an only add members if you are a member");
+            throw new RuntimeException("You can only add members if you are a member");
         }
 
         chatGroup.addMember(member);
