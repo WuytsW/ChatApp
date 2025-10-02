@@ -1,4 +1,4 @@
-package com.example.chatapp.config;
+package com.example.chatapp.security;
 
 import com.example.chatapp.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
