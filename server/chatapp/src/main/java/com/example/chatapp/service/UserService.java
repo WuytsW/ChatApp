@@ -1,14 +1,13 @@
 
 package com.example.chatapp.service;
 
-import com.example.chatapp.dto.RegisterRequest;
+import com.example.chatapp.dto.request.RegisterRequest;
 import com.example.chatapp.model.User;
 import com.example.chatapp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {

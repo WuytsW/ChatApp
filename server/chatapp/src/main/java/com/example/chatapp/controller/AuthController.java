@@ -1,6 +1,6 @@
 package com.example.chatapp.controller;
 
-import com.example.chatapp.dto.LoginRequest;
+import com.example.chatapp.dto.request.LoginRequest;
 import com.example.chatapp.model.User;
 import com.example.chatapp.repository.UserRepository;
 import com.example.chatapp.security.JwtUtil;
@@ -41,7 +41,7 @@ public class AuthController {
             return Map.of("error", "Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user);
 
         return Map.of("token", token);
     }

@@ -28,19 +28,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             String token = authHeader.substring(7);
+
             if (jwtUtil.isTokenValid(token)) {
-                String username = jwtUtil.extractUsername(token);
+                Long userId    = jwtUtil.extractId(token);        // sub = "1"
+                String username = jwtUtil.extractUsername(token); // claim "uname": "Willem"
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(username, null, null);
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // Map roles claim to ROLE_* authorities
+                var authorities = jwtUtil.extractRoles(token).stream()
+                        .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
+                        .map(org.springframework.security.core.authority.SimpleGrantedAuthority::new)
+                        .toList();
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Build JwtUser as principal (so @AuthenticationPrincipal JwtUser works)
+                var principal = new com.example.chatapp.security.JwtUser(
+                        userId, username, null, authorities, true
+                );
+
+                var auth = new UsernamePasswordAuthenticationToken(principal, null, authorities);
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 
         filterChain.doFilter(request, response);
     }
 }
+

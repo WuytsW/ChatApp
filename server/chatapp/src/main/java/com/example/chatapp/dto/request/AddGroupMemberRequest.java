@@ -1,4 +1,4 @@
-package com.example.chatapp.dto;
+package com.example.chatapp.dto.request;
 
 public class AddGroupMemberRequest {
     private String group_name;

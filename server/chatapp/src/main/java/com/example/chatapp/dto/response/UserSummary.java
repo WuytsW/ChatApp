@@ -1,4 +1,4 @@
-package com.example.chatapp.dto;
+package com.example.chatapp.dto.response;
 
 import com.example.chatapp.model.User;
 
@@ -13,10 +13,7 @@ public class UserSummary {
         this.username = user.getUsername();
     }
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
+    public Long getId() { return id; }
     public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
 }

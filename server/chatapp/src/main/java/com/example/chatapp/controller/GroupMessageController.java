@@ -1,15 +1,16 @@
 package com.example.chatapp.controller;
 
-import com.example.chatapp.dto.SendDirectMessageRequest;
-import com.example.chatapp.dto.SendGroupMessageRequest;
+import com.example.chatapp.dto.request.SendGroupMessageRequest;
+import com.example.chatapp.dto.response.MessageResponse;
 import com.example.chatapp.model.GroupMessage;
+import com.example.chatapp.security.JwtUser;
 import com.example.chatapp.service.GroupMessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/messages/group")
@@ -22,43 +23,45 @@ public class GroupMessageController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<GroupMessage>> getGroupMessages(
-            Authentication auth
+    public ResponseEntity<List<MessageResponse>> getGroupMessages(
+            @AuthenticationPrincipal JwtUser user
     ) {
-        String username = auth.getName();
-        List<GroupMessage> messages = groupMessageService.getAllGroupMessagesForUser(username);
-        return ResponseEntity.ok(messages);
+        String username = user.getUsername();
+        List<GroupMessage> groupMessages = groupMessageService.getAllGroupMessagesForUser(username);
+        List<MessageResponse> response = groupMessages.stream().map(MessageResponse::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/get/group/{id}")
-    public ResponseEntity<List<GroupMessage>> getGroupMessagesByGroup(
-            Authentication auth,
+    public ResponseEntity<List<MessageResponse>> getGroupMessagesByGroup(
+            @AuthenticationPrincipal JwtUser user,
             @PathVariable Long id
     ) {
-        String username = auth.getName();
-        List<GroupMessage> messages = groupMessageService.getGroupMessageByGroup(id, username);
-        return ResponseEntity.ok(messages);
+        String username = user.getUsername();
+        List<GroupMessage> groupMessages = groupMessageService.getGroupMessageByGroup(id, username);
+        List<MessageResponse> response = groupMessages.stream().map(MessageResponse::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/send")
-    public ResponseEntity<GroupMessage> sendGroupMessage(
+    public ResponseEntity<MessageResponse> sendGroupMessage(
             @RequestBody SendGroupMessageRequest req,
-            Authentication auth
+            @AuthenticationPrincipal JwtUser user
     ) {
-        String username = auth.getName();
-        GroupMessage message = groupMessageService.sendGroupMessage(username, req.getGroup_id(), req.getContent());
-
-        return ResponseEntity.ok(message);
+        String username = user.getUsername();
+        GroupMessage groupMessage = groupMessageService.sendGroupMessage(username, req.getGroup_id(), req.getContent());
+        MessageResponse response = new MessageResponse(groupMessage);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/read")
-    public ResponseEntity<GroupMessage> markAsRead(
-            Authentication auth,
+    public ResponseEntity<MessageResponse> markAsRead(
+            @AuthenticationPrincipal JwtUser user,
             @RequestParam Long group_message_id
     ) {
-        String username = auth.getName();
-
-        GroupMessage message = groupMessageService.markGroupMessageAsRead(group_message_id, username);
-        return ResponseEntity.ok(message);
+        String username = user.getUsername();
+        GroupMessage groupMessage = groupMessageService.markGroupMessageAsRead(group_message_id, username);
+        MessageResponse response = new MessageResponse(groupMessage);
+        return ResponseEntity.ok(response);
     }
 }

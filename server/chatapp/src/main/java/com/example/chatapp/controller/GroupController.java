@@ -1,22 +1,18 @@
 package com.example.chatapp.controller;
 
 
-import com.example.chatapp.dto.AddGroupMemberRequest;
-import com.example.chatapp.dto.LoginRequest;
+import com.example.chatapp.dto.request.AddGroupMemberRequest;
+import com.example.chatapp.dto.response.ChatGroupResponse;
+import com.example.chatapp.dto.response.MessageResponse;
 import com.example.chatapp.model.ChatGroup;
-import com.example.chatapp.model.GroupMessage;
-import com.example.chatapp.model.User;
-import com.example.chatapp.repository.ChatGroupRepository;
-import com.example.chatapp.repository.UserRepository;
-import com.example.chatapp.service.GroupMessageService;
+import com.example.chatapp.security.JwtUser;
 import com.example.chatapp.service.GroupService;
-import com.example.chatapp.service.DirectMessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/groups")
@@ -29,27 +25,29 @@ public class GroupController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<ChatGroup>> getGroups(Authentication auth){
-        String username = auth.getName();
+    public ResponseEntity<List<ChatGroupResponse>> getGroups(@AuthenticationPrincipal JwtUser user){
+        String username = user.getUsername();
         List<ChatGroup> chatGroups = groupService.getGroupsByUsername(username);
-        return ResponseEntity.ok(chatGroups);
+        List<ChatGroupResponse> response = chatGroups.stream().map(ChatGroupResponse::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/new")
-    public ResponseEntity<ChatGroup> createGroup(Authentication auth, String name) {
-        String username = auth.getName();
+    public ResponseEntity<ChatGroupResponse> createGroup(@AuthenticationPrincipal JwtUser user, String name) {
+        String username = user.getUsername();
         ChatGroup chatGroup = groupService.createNew(username, name);
-        return ResponseEntity.ok(chatGroup);
+        ChatGroupResponse response = new ChatGroupResponse(chatGroup);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ChatGroup> addUserToGroup(
-            Authentication auth,
+    public ResponseEntity<ChatGroupResponse> addUserToGroup(
+            @AuthenticationPrincipal JwtUser user,
             @RequestBody AddGroupMemberRequest addGroupMemberRequest
     ) {
-        String username = auth.getName();
-        ChatGroup chatGroup =
-                groupService.addMember(username, addGroupMemberRequest.getGroup_name(), addGroupMemberRequest.getMember_name());
-        return ResponseEntity.ok(chatGroup);
+        String username = user.getUsername();
+        ChatGroup chatGroup = groupService.addMember(username, addGroupMemberRequest);
+        ChatGroupResponse response = new ChatGroupResponse(chatGroup);
+        return ResponseEntity.ok(response);
     }
 }

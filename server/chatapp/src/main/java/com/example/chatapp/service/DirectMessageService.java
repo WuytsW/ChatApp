@@ -24,11 +24,11 @@ public class DirectMessageService {
         this.userRepository = userRepository;
     }
 
-    public DirectMessage sendDirectMessage(String senderName, String recipientName, String content) {
-        User sender = userRepository.findByUsername(senderName)
-                .orElseThrow(() -> new RuntimeException("Sender not found: " + senderName));
-        User recipient = userRepository.findByUsername(recipientName)
-                .orElseThrow(() -> new RuntimeException("Recipient not found: " + recipientName));
+    public DirectMessage sendDirectMessage(Long senderId, Long recipientId, String content) {
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender not found: " + senderId));
+        User recipient = userRepository.findById(recipientId)
+                .orElseThrow(() -> new RuntimeException("Recipient not found: " + recipientId));
 
         Message message = new Message(sender, content);
         message = messageRepository.save(message);
@@ -37,40 +37,40 @@ public class DirectMessageService {
     }
 
 
-    public List<DirectMessage> getDirectMessagesForUser(String recipientName) {
-        User user = userRepository.findByUsername(recipientName)
-                .orElseThrow(() -> new RuntimeException("User not found: " + recipientName));
+    public List<DirectMessage> getDirectMessagesForUser(Long user_id) {
+        User user = userRepository.findById(user_id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + user_id));
         return directMessageRepository.findByRecipient(user);
     }
 
-    public List<DirectMessage> getUnreadDirectMessagesForUser(String recipientName) {
-        User user = userRepository.findByUsername(recipientName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public List<DirectMessage> getUnreadDirectMessagesForUser(Long user_id) {
+        User user = userRepository.findById(user_id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + user_id));
         return directMessageRepository.findByRecipientAndIsReadFalse(user);
     }
 
-    public List<DirectMessage> getDirectMessagesForUserFromUser(String recipientName, String senderName) {
-        User user = userRepository.findByUsername(recipientName)
-                .orElseThrow(() -> new RuntimeException("Recipient not found: " + recipientName));
-        User sender = userRepository.findByUsername(senderName)
-                .orElseThrow(() -> new RuntimeException("Sender not found: " + senderName));
-        return directMessageRepository.findByMessageSenderAndRecipientOrderByMessageSentAtAsc(sender, user);
+    public List<DirectMessage> getDirectMessagesForUserFromUser(Long recipientId, Long senderId) {
+        User recipient = userRepository.findById(recipientId)
+                .orElseThrow(() -> new RuntimeException("Recipient not found: " + recipientId));
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender not found: " + senderId));
+        return directMessageRepository.findByMessageSenderAndRecipientOrderByMessageSentAtAsc(sender, recipient);
     }
 
-    public List<DirectMessage> getDirectConversation(String userName1, String userName2){
+    public List<DirectMessage> getDirectConversation(Long userId1, Long userId2){
         List<DirectMessage> messages= new ArrayList<>();
-        messages.addAll(getDirectMessagesForUserFromUser(userName1, userName2));
-        messages.addAll(getDirectMessagesForUserFromUser(userName2, userName1));
+        messages.addAll(getDirectMessagesForUserFromUser(userId1, userId2));
+        messages.addAll(getDirectMessagesForUserFromUser(userId2, userId1));
         messages.sort(Comparator.comparing(directMessage -> directMessage.getMessage().getSentAt()));
         return messages;
     }
 
-    public DirectMessage markDirectMessageAsRead(Long messageId, String recipientName) {
+    public DirectMessage markDirectMessageAsRead(Long messageId, Long recipientId) {
         DirectMessage message = directMessageRepository.findById(messageId)
                 .orElseThrow(() -> new RuntimeException("Message not found: " + messageId));
 
-        if (!message.getRecipient().getUsername().equals(recipientName)) {
-            throw new RuntimeException("You are not allowed to modify this message, user: " + recipientName + ", message: " + messageId);
+        if (!message.getRecipient().getId().equals(recipientId)) {
+            throw new RuntimeException("You are not allowed to modify this message, user: " + recipientId + ", message: " + messageId);
         }
 
         message.setIsRead(true);

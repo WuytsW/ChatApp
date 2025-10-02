@@ -1,4 +1,4 @@
-package com.example.chatapp.dto;
+package com.example.chatapp.dto.request;
 
 public class LoginRequest {
     private String email_or_username;

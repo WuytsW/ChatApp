@@ -1,5 +1,6 @@
 package com.example.chatapp.service;
 
+import com.example.chatapp.dto.request.AddGroupMemberRequest;
 import com.example.chatapp.model.ChatGroup;
 import com.example.chatapp.model.User;
 import com.example.chatapp.repository.ChatGroupRepository;
@@ -35,12 +36,12 @@ public class GroupService {
         return chatGroupRepository.save(chatGroup);
     }
 
-    public ChatGroup addMember(String username, String groupName, String memberName) {
+    public ChatGroup addMember(String username, AddGroupMemberRequest addGroupMemberRequest) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        ChatGroup chatGroup = chatGroupRepository.findByName(groupName)
-                .orElseThrow(() -> new RuntimeException("Group not found: " + groupName));
-        User member = userRepository.findByUsername(memberName)
+        ChatGroup chatGroup = chatGroupRepository.findByName(addGroupMemberRequest.getGroup_name())
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        User member = userRepository.findByUsername(addGroupMemberRequest.getMember_name())
                 .orElseThrow(() -> new RuntimeException("New member not found"));
 
         if(!chatGroup.getMembers().contains(user)){
