@@ -1,63 +1,55 @@
 package com.example.chatapp.controller;
 
 
+import com.example.chatapp.dto.AddGroupMemberRequest;
+import com.example.chatapp.dto.LoginRequest;
 import com.example.chatapp.model.ChatGroup;
-import com.example.chatapp.model.DirectMessage;
 import com.example.chatapp.model.GroupMessage;
 import com.example.chatapp.model.User;
 import com.example.chatapp.repository.ChatGroupRepository;
 import com.example.chatapp.repository.UserRepository;
+import com.example.chatapp.service.GroupMessageService;
 import com.example.chatapp.service.GroupService;
-import com.example.chatapp.service.MessageService;
+import com.example.chatapp.service.DirectMessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/groups")
 public class GroupController {
 
-    ChatGroupRepository chatGroupRepository;
-    UserRepository userRepository;
-    MessageService messageService;
+    private final GroupService groupService;
 
-    public GroupController(ChatGroupRepository chatGroupRepository, UserRepository userRepository, MessageService messageService){
-        this.chatGroupRepository = chatGroupRepository;
-        this.userRepository = userRepository;
-        this.messageService = messageService;
+    public GroupController(GroupService groupService){
+        this.groupService = groupService;
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<List<ChatGroup>> getGroups(Authentication auth){
+        String username = auth.getName();
+        List<ChatGroup> chatGroups = groupService.getGroupsByUsername(username);
+        return ResponseEntity.ok(chatGroups);
     }
 
     @PostMapping("/new")
-    public ResponseEntity<ChatGroup> getUserUnreadMessages(Authentication auth, ChatGroup group) {
+    public ResponseEntity<ChatGroup> createGroup(Authentication auth, String name) {
         String username = auth.getName();
-        User user = userRepository.findByUsername(username).get();
-        group.addMember(user);
-        ChatGroup chatGroup = chatGroupRepository.save(group);
-
+        ChatGroup chatGroup = groupService.createNew(username, name);
         return ResponseEntity.ok(chatGroup);
     }
 
-    @PostMapping("/{id}/send")
-    public ResponseEntity<GroupMessage> sendGroupMessage(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> body,
-            Authentication auth
+    @PostMapping("/add")
+    public ResponseEntity<ChatGroup> addUserToGroup(
+            Authentication auth,
+            @RequestBody AddGroupMemberRequest addGroupMemberRequest
     ) {
         String username = auth.getName();
-        User sender = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
-
-        String content = body.get("content");
-        if (content == null || content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        GroupMessage message = messageService.sendGroupMessage(sender.getId(), id, content);
-        return ResponseEntity.ok(message);
+        ChatGroup chatGroup =
+                groupService.addMember(username, addGroupMemberRequest.getGroup_name(), addGroupMemberRequest.getMember_name());
+        return ResponseEntity.ok(chatGroup);
     }
 }

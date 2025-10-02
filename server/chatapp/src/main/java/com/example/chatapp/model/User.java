@@ -2,7 +2,9 @@ package com.example.chatapp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,7 +39,13 @@ public class User {
     @ManyToMany(mappedBy = "members")
     private Set<ChatGroup> groups = new HashSet<>();
 
-
+    @ManyToMany
+    @JoinTable(
+            name = "friends", // join table name
+            joinColumns = @JoinColumn(name = "user_id"), // current user
+            inverseJoinColumns = @JoinColumn(name = "friend_id") // their friend
+    )
+    private List<User> friends = new ArrayList<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -61,6 +69,21 @@ public class User {
     }
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+    public List<User> addFriend(User user) {
+        friends.add(user);
+        return friends;
+    }
+    public List<User> removeFriend(User user) {
+        friends.remove(user);
+        return friends;
     }
 }
 

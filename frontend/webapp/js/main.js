@@ -122,3 +122,8 @@ async function markAsRead(id) {
     alert("Failed to mark as read ❌");
   }
 }
+
+groupsBtn.addEventListener("click", () => {
+  window.location.href = "groups.html";
+});
+

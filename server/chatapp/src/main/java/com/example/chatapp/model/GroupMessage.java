@@ -17,6 +17,8 @@ public class GroupMessage {
         this.chatGroup = chatGroup;
     }
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,6 +39,24 @@ public class GroupMessage {
     )
     private List<User> read_by_members = new ArrayList<>();
 
+    public Long getId() {
+        return id;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+    public void setMessage(Message message) {
+        this.message = message;
+    }
+
+    public ChatGroup getChatGroup() {
+        return chatGroup;
+    }
+    public void setChatGroup(ChatGroup chatGroup) {
+        this.chatGroup = chatGroup;
+    }
+
     public List<User> getRead_by_members() {
         return read_by_members;
     }
@@ -52,4 +72,6 @@ public class GroupMessage {
     public void removeRead_by_Member(User member){
         this.read_by_members.remove(member);
     }
+
+
 }

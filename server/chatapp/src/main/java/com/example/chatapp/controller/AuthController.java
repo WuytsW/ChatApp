@@ -26,10 +26,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody LoginRequest loginRequest) {
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail_or_password());
 
         if (userOptional.isEmpty()) {
-            return Map.of("error", "User not found");
+            userOptional = userRepository.findByUsername(loginRequest.getEmail_or_password());
+            if (userOptional.isEmpty()) {
+                return Map.of("error", "User not found");
+            }
         }
 
         User user = userOptional.get();
@@ -38,7 +41,6 @@ public class AuthController {
             return Map.of("error", "Invalid password");
         }
 
-        // ✅ Generate JWT
         String token = jwtUtil.generateToken(user.getUsername());
 
         return Map.of("token", token);

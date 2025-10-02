@@ -2,12 +2,14 @@ package com.example.chatapp.controller;
 
 import com.example.chatapp.model.User;
 import com.example.chatapp.service.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -21,8 +23,20 @@ public class UserController {
         return userService.saveUser(user);
     }
 
-//    @GetMapping("")
-//    public List<User> getUsers(){
-//        return userService.getAllUsers();
-//    }
+    @GetMapping("/get")
+    public User getUser(Authentication auth){
+        String username = auth.getName();
+        return userService.getUserByUsername(username);
+    }
+
+    @GetMapping("/get/user")
+    public User getUserByUsername(String username){
+        return userService.getUserByUsername(username);
+    }
+
+    @PostMapping("/friends/add")
+    public User addFriend(Authentication auth, String friend_name){
+        String username = auth.getName();
+        return userService.addFriend(username, friend_name);
+    }
 }

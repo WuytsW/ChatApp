@@ -30,16 +30,26 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public User addFriend(String username, String friendName){
+        User user =  userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User friend =  userRepository.findByUsername(friendName)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.addFriend(friend);
+        return userRepository.save(user);
     }
 }
 

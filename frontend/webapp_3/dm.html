@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatApp – Direct Message</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="main.html" class="btn small">← Back</a>
+    <div id="dm-title" class="brand"></div>
+    <div class="spacer"></div>
+    <button id="logout-btn" class="btn small">Logout</button>
+  </header>
+
+  <main class="container">
+    <section class="card chat">
+      <div id="messages" class="messages"></div>
+      <form id="send-dm-form" class="send-form">
+        <input type="text" name="content" placeholder="Write a message..." required />
+        <button type="submit" class="btn primary">Send</button>
+      </form>
+      <p id="send-error" class="error small"></p>
+    </section>
+  </main>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/dm.js"></script>
+</body>
+</html>
