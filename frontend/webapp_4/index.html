@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tiny Chat Frontend</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+  <h1>Tiny Chat Frontend</h1>
+
+  <!-- Login -->
+  <section id="page-login">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label>
+        Username or Email:
+        <input id="username" name="username" required autocomplete="username">
+      </label>
+      <br>
+      <label>
+        Password:
+        <input id="password" name="password" type="password" required autocomplete="current-password">
+      </label>
+      <br>
+      <button type="submit">Log in</button>
+    </form>
+    <p id="login-error" style="color:red;"></p>
+  </section>
+
+  <!-- Nav (only visible when logged in) -->
+  <section id="page-nav" style="display:none;">
+    <button data-goto="page-direct">Direct Messages</button>
+    <button data-goto="page-friends">Friends</button>
+    <button data-goto="page-groups">Groups</button>
+    <button id="btn-logout">Log out</button>
+    <hr>
+  </section>
+
+  <!-- Direct messages -->
+  <section id="page-direct" style="display:none;">
+    <h2>Your Direct Messages</h2>
+    <button id="btn-refresh-direct">Refresh</button>
+    <p id="direct-error" style="color:red;"></p>
+    <div id="direct-list"></div>
+    <hr>
+    <h3>Send Direct Message</h3>
+    <form id="direct-send-form">
+      <label>
+        To (user id):
+        <input id="dm-to" type="number" min="1" required>
+      </label>
+      <br>
+      <label>
+        Message:
+        <input id="dm-text" required>
+      </label>
+      <br>
+      <button type="submit">Send</button>
+    </form>
+    <p id="direct-send-info" style="color:green;"></p>
+    <p id="direct-send-error" style="color:red;"></p>
+  </section>
+
+  <!-- Friends -->
+  <section id="page-friends" style="display:none;">
+    <h2>Friends</h2>
+    <button id="btn-refresh-friends">Refresh</button>
+    <p id="friends-error" style="color:red;"></p>
+    <div id="friends-list"></div>
+    <hr>
+    <h3>Add Friend</h3>
+    <form id="friend-add-form">
+      <label>
+        Friend username:
+        <input id="friend-name" required>
+      </label>
+      <br>
+      <button type="submit">Add</button>
+    </form>
+    <p id="friend-add-info" style="color:green;"></p>
+    <p id="friend-add-error" style="color:red;"></p>
+  </section>
+
+  <!-- Groups -->
+  <section id="page-groups" style="display:none;">
+    <h2>Your Groups</h2>
+    <button id="btn-refresh-groups">Refresh</button>
+    <p id="groups-error" style="color:red;"></p>
+    <div id="groups-list"></div>
+
+    <hr>
+    <h3>Group Messages</h3>
+    <form id="group-load-form">
+      <label>
+        Group ID:
+        <input id="group-id" type="number" min="1" required>
+      </label>
+      <button type="submit">Load Messages</button>
+    </form>
+    <p id="group-msg-error" style="color:red;"></p>
+    <div id="group-msg-list"></div>
+
+    <hr>
+    <h3>Send Group Message</h3>
+    <form id="group-send-form">
+      <label>
+        Group ID:
+        <input id="group-send-id" type="number" min="1" required>
+      </label>
+      <br>
+      <label>
+        Message:
+        <input id="group-send-text" required>
+      </label>
+      <br>
+      <button type="submit">Send</button>
+    </form>
+    <p id="group-send-info" style="color:green;"></p>
+    <p id="group-send-error" style="color:red;"></p>
+
+    <!-- Add this inside your Groups page container -->
+    <form id="group-add-member-form" style="margin-top:16px">
+      <label>
+        Group ID:
+        <input type="number" id="group-add-id" required />
+      </label>
+      <label>
+        Member ID:
+        <input type="number" id="group-add-member-id" required />
+      </label>
+      <button type="submit">Add Member to Group</button>
+      <span id="group-add-member-info" style="color:var(--ok);margin-left:8px"></span>
+      <span id="group-add-member-error" style="color:var(--danger);margin-left:8px"></span>
+    </form>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

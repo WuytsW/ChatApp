@@ -1,0 +1,157 @@
+/* ===== Global ===== */
+:root {
+  --primary: #4a90e2;
+  --primary-dark: #357ABD;
+  --background: #f4f7fb;
+  --text: #333;
+  --danger: #e74c3c;
+  --ok: #2ecc71;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--text);
+}
+
+h1, h2, h3 {
+  color: var(--primary-dark);
+}
+
+section {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 1.5rem 0;
+}
+
+/* ===== Buttons ===== */
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: var(--primary-dark);
+}
+
+/* ===== Forms ===== */
+form {
+  margin-top: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ===== Navigation ===== */
+#page-nav {
+  text-align: center;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem auto;
+  max-width: 600px;
+}
+
+#page-nav button {
+  margin: 0 0.5rem;
+}
+
+/* ===== Lists / JSON output ===== */
+#direct-list,
+#friends-list,
+#groups-list,
+#group-msg-list {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+#direct-list div,
+#friends-list div,
+#groups-list div,
+#group-msg-list div {
+  background: white;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ===== Error & Info Messages ===== */
+#login-error,
+#direct-error,
+#friends-error,
+#groups-error,
+#group-msg-error,
+#direct-send-error,
+#friend-add-error,
+#group-send-error,
+#group-add-member-error {
+  color: var(--danger);
+  margin-top: 0.5rem;
+}
+
+#direct-send-info,
+#friend-add-info,
+#group-send-info,
+#group-add-member-info {
+  color: var(--ok);
+  margin-top: 0.5rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 650px) {
+  section {
+    margin: 1rem;
+    padding: 1.2rem;
+  }
+
+  #page-nav button {
+    margin: 0.4rem 0.2rem;
+    display: inline-block;
+  }
+}
