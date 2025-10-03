@@ -32,6 +32,7 @@ const ENDPOINTS = {
   groupSend: "/messages/group/send",
   //   e.g., @PostMapping("/groups/{groupId}/addMember") with JSON { memberId }
   groupAddMember: "/groups/add",
+  groupCreate: "/groups/new",
 };
 // =========================================
 
@@ -92,6 +93,12 @@ const els = {
   groupAddMemberId: document.getElementById("group-add-member-id"),
   groupAddMemberInfo: document.getElementById("group-add-member-info"),
   groupAddMemberError: document.getElementById("group-add-member-error"),
+
+  // new elements for creating groups
+  groupCreateForm: document.getElementById("group-create-form"),
+  groupCreateName: document.getElementById("group-create-name"),
+  groupCreateInfo: document.getElementById("group-create-info"),
+  groupCreateError: document.getElementById("group-create-error"),
 };
 
 // --- token helpers ---
@@ -348,6 +355,21 @@ els.groupAddMemberForm.addEventListener("submit", async (e) => {
     await refreshGroups();
   } catch (err) {
     els.groupAddMemberError.textContent = err.message || String(err);
+  }
+});
+els.groupCreateForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  els.groupCreateInfo.textContent = "";
+  els.groupCreateError.textContent = "";
+  try {
+    const groupName = els.groupCreateName.value.trim();
+    if (!groupName) throw new Error("Group name required.");
+    await apiPost(ENDPOINTS.groupCreate, { groupName });
+    els.groupCreateInfo.textContent = "Group created!";
+    els.groupCreateName.value = "";
+    await refreshGroups();
+  } catch (err) {
+    els.groupCreateError.textContent = err.message || String(err);
   }
 });
 

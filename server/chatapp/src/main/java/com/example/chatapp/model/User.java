@@ -81,8 +81,10 @@ public class User {
         this.friends = friends;
     }
     public List<User> addFriend(User user) {
-        friends.add(user);
-        return friends;
+        if(!this.friends.contains(user)) {
+            this.friends.add(user);
+        }
+        return this.friends;
     }
     public List<User> removeFriend(User user) {
         friends.remove(user);

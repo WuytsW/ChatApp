@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GroupService {
@@ -22,11 +23,17 @@ public class GroupService {
         this.userRepository = userRepository;
     }
 
-    public ChatGroup createNew(Long userId, String name) {
+    public ChatGroup createNew(Long userId, String name, List<Long> newMemberIds) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        ChatGroup chatGroup = new ChatGroup(name);
+        ChatGroup chatGroup = new ChatGroup(name, user);
         chatGroup.addMember(user);
+
+        List<User> users = newMemberIds.stream()
+                .map(id -> userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found: " + id)))
+                .toList();
+        chatGroup.addMembers(users);
         return chatGroupRepository.save(chatGroup);
     }
 

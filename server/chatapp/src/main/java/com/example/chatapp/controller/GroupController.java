@@ -2,6 +2,7 @@ package com.example.chatapp.controller;
 
 
 import com.example.chatapp.dto.request.AddGroupMemberRequest;
+import com.example.chatapp.dto.request.CreateGroupRequest;
 import com.example.chatapp.dto.response.ChatGroupResponse;
 import com.example.chatapp.dto.response.MessageResponse;
 import com.example.chatapp.model.ChatGroup;
@@ -33,18 +34,15 @@ public class GroupController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<ChatGroupResponse> createGroup(@AuthenticationPrincipal JwtUser jwtUser, String name) {
+    public ResponseEntity<ChatGroupResponse> createGroup(@AuthenticationPrincipal JwtUser jwtUser, @RequestBody CreateGroupRequest createGroupRequest) {
         Long userId = jwtUser.getId();
-        ChatGroup chatGroup = groupService.createNew(userId, name);
+        ChatGroup chatGroup = groupService.createNew(userId, createGroupRequest.getGroupName(), createGroupRequest.getNewMembersIds());
         ChatGroupResponse response = new ChatGroupResponse(chatGroup);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ChatGroupResponse> addUserToGroup(
-            @AuthenticationPrincipal JwtUser jwtUser,
-            @RequestBody AddGroupMemberRequest addGroupMemberRequest
-    ) {
+    public ResponseEntity<ChatGroupResponse> addUserToGroup(@AuthenticationPrincipal JwtUser jwtUser, @RequestBody AddGroupMemberRequest addGroupMemberRequest) {
         Long userId = jwtUser.getId();
         ChatGroup chatGroup = groupService.addMember(userId, addGroupMemberRequest);
         ChatGroupResponse response = new ChatGroupResponse(chatGroup);

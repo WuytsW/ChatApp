@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2afafd14-bdab-4fd4-a25d-d313f1ea780a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/GroupMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/GroupMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/dto/request/CreateGroupRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../webapp_4/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/../webapp_4/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../webapp_4/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../webapp_4/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/controller/GroupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/controller/GroupController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/controller/GroupMessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/controller/GroupMessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/ChatGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/ChatGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/service/GroupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../server/chatapp/src/main/java/com/example/chatapp/service/GroupService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +94,7 @@
       <workItem from="1759219627587" duration="6000" />
       <workItem from="1759246382974" duration="887000" />
       <workItem from="1759327051252" duration="28000" />
+      <workItem from="1759492963772" duration="617000" />
     </task>
     <servers />
   </component>
