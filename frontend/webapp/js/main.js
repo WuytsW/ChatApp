@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesDiv = document.getElementById("messages");
   const sendForm = document.getElementById("sendMessageForm");
   const logoutBtn = document.getElementById("logoutBtn");
+  const groupsBtn = document.getElementById("groupsBtn");
 
   async function loadMessages() {
     messagesDiv.innerHTML = "Loading messages...";
@@ -98,32 +99,33 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 
+  if (groupsBtn) {
+    groupsBtn.addEventListener("click", () => {
+      window.location.href = "groups.html";
+    });
+  }
+
+  window.markAsRead = async (id) => {
+    const authToken = localStorage.getItem("jwt");
+    if (!authToken) {
+      alert("Not authenticated!");
+      return;
+    }
+
+    const res = await fetch(`http://localhost:8080/api/messages/${id}/read`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    if (res.ok) {
+      alert("Message marked as read ✅");
+      await loadMessages();
+    } else {
+      alert("Failed to mark as read ❌");
+    }
+  };
+
   loadMessages();
 });
-
-async function markAsRead(id) {
-  const token = localStorage.getItem("jwt");
-  if (!token) {
-    alert("Not authenticated!");
-    return;
-  }
-
-  const res = await fetch(`http://localhost:8080/api/messages/${id}/read`, {
-    method: "PATCH",
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  });
-
-  if (res.ok) {
-    alert("Message marked as read ✅");
-    loadMessages(); // refresh list
-  } else {
-    alert("Failed to mark as read ❌");
-  }
-}
-
-groupsBtn.addEventListener("click", () => {
-  window.location.href = "groups.html";
-});
-

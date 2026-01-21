@@ -2,19 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Register - ChatApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Register</h1>
-    <form id="registerForm">
-      <input type="text" id="username" placeholder="Username" required /><br />
-      <input type="email" id="email" placeholder="Email" required /><br />
-      <input type="password" id="password" placeholder="Password" required /><br />
-      <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="login.html">Login</a></p>
+  <div class="page auth">
+    <div class="auth-card">
+      <div class="brand">
+        <span class="brand-mark">💬</span>
+        <span class="brand-name">ChatApp</span>
+      </div>
+      <h1>Create your account</h1>
+      <p class="muted">Join the space where your people already chat.</p>
+      <form id="registerForm" class="form">
+        <label class="input-group">
+          <span>Username</span>
+          <input type="text" id="username" placeholder="yourname" required />
+        </label>
+        <label class="input-group">
+          <span>Email</span>
+          <input type="email" id="email" placeholder="you@company.com" required />
+        </label>
+        <label class="input-group">
+          <span>Password</span>
+          <input type="password" id="password" placeholder="Create a secure password" required />
+        </label>
+        <button type="submit" class="button primary">Create account</button>
+      </form>
+      <p class="muted">Already have an account? <a href="login.html">Login</a></p>
+    </div>
   </div>
   <script src="js/auth.js"></script>
 </body>
