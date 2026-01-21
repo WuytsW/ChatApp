@@ -2,24 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ChatApp - Main</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>📨 Your Messages</h1>
+  <div class="page">
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-mark">💬</span>
+        <span class="brand-name">ChatApp</span>
+      </div>
+      <div class="top-actions">
+        <button id="groupsBtn" class="button ghost">My Groups</button>
+        <button id="logoutBtn" class="button danger">Logout</button>
+      </div>
+    </header>
 
-    <div id="messages" class="messages"></div>
+    <main class="dashboard">
+      <section class="panel">
+        <h1>Inbox</h1>
+        <p class="muted">Catch up on your latest updates.</p>
+        <div id="messages" class="messages"></div>
+      </section>
 
-    <h2>✉️ Send a Message</h2>
-    <form id="sendMessageForm">
-      <input type="text" id="recipient" placeholder="Recipient username" required /><br />
-      <textarea id="content" placeholder="Write your message..." required></textarea><br />
-      <button type="submit">Send</button>
-    </form>
-
-    <button id="logoutBtn" class="logout">Logout</button>
-    <button id="groupsBtn">My Groups</button>
+      <section class="panel">
+        <h2>Send a Message</h2>
+        <p class="muted">Start a new conversation in seconds.</p>
+        <form id="sendMessageForm" class="form">
+          <label class="input-group">
+            <span>Recipient username</span>
+            <input type="text" id="recipient" placeholder="e.g. ava.m" required />
+          </label>
+          <label class="input-group">
+            <span>Your message</span>
+            <textarea id="content" placeholder="Write something thoughtful..." required></textarea>
+          </label>
+          <button type="submit" class="button primary">Send message</button>
+        </form>
+      </section>
+    </main>
   </div>
 
   <script src="js/main.js"></script>
